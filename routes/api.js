@@ -1,37 +1,19 @@
+const Training = require("../models/training");
 const router = require("express").Router();
-const Transaction = require("../models/transaction.js");
 
+module.exports = function(router){
+  router.get("/api/trainings", function(req, res){
+    Training.find().then(data => {
+      res.json(data)
+    })
+  })
+}
 
-router.post("/api/transaction", ({ body }, res) => {
-    Transaction.create(body)
-      .then(dbTransaction => {
-        res.json(dbTransaction);
-      })
-      .catch(err => {
-        res.status(400).json(err);
-      });
-  });
-  
-  router.post("/api/transaction/bulk", ({ body }, res) => {
-    Transaction.insertMany(body)
-      .then(dbTransaction => {
-        res.json(dbTransaction);
-      })
-      .catch(err => {
-        res.status(400).json(err);
-      });
-  });
-  
-  router.get("/api/transaction", (req, res) => {
-    Transaction.find({})
-      .sort({ date: -1 })
-      .then(dbTransaction => {
-        res.json(dbTransaction);
-      })
-      .catch(err => {
-        res.status(400).json(err);
-      });
-  });
-  
-  module.exports = router;
-  
+router.post("/api/trainings", function(req, res){
+  Training.create({}).then(data => res.json(data))
+})
+
+router.put("/api/trainings/:id", ({body, params}, res) => {
+  Training.findByIdAndUpdate(params.id,{$push: {exercises:body} },{new: true, runValidators: true })
+  .then(data => res.json(data))
+})
